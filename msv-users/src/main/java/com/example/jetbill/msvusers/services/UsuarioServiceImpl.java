@@ -31,11 +31,11 @@ public class UsuarioServiceImpl implements UsuarioService{
             throws UserAlreadyExistsException, UserServiceLogicException {
         try {
             if (userRepository.findByEmail(newUserDetails.getEmail()) != null) {
-                throw new UserAlreadyExistsException("Registration failed: User already exists with email "
+                throw new UserAlreadyExistsException(ExceptionMessageResponse.USER_EXIST_WITH_EMAIL.getMessage()
                         + newUserDetails.getEmail());
             }
             if (userRepository.findByUserName(newUserDetails.getUserName()) != null) {
-                throw new UserAlreadyExistsException("Registration failed: User already exists with username "
+                throw new UserAlreadyExistsException(ExceptionMessageResponse.USER_EXIST_WITH_USERNAME.getMessage()
                         + newUserDetails.getUserName());
             }
 
@@ -52,7 +52,8 @@ public class UsuarioServiceImpl implements UsuarioService{
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body(new ApiResponseDto<>(ApiResponseStatus.SUCCESS.name(),
-                            "New user  has been successfully created!"));
+                            ExceptionMessageResponse.NEW_USER_CREATED.getMessage()
+                            ));
 
         } catch (UserAlreadyExistsException e) {
             throw new UserAlreadyExistsException(e.getMessage());
@@ -83,7 +84,7 @@ public class UsuarioServiceImpl implements UsuarioService{
         throws UserNotFoundException, UserServiceLogicException {
         try {
             Usuario user = userRepository.findById(id).orElseThrow(
-                    () -> new UserNotFoundException(ExceptionMessageResponse.USER_NOT_FOUND.toString() + id));
+                    () -> new UserNotFoundException(ExceptionMessageResponse.USER_NOT_FOUND.getMessage() + id));
 
             user.setEmail(newUserDetails.getEmail());
             user.setUserName(newUserDetails.getUserName());
@@ -94,7 +95,8 @@ public class UsuarioServiceImpl implements UsuarioService{
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(new ApiResponseDto<>(ApiResponseStatus.SUCCESS.name(),
-                            "User  updated successfully!")
+                            ExceptionMessageResponse.USER_UPDATE_SUCCESSFULLY.getMessage()
+                            )
                     );
 
         }catch(UserNotFoundException e){
@@ -110,14 +112,15 @@ public class UsuarioServiceImpl implements UsuarioService{
             throws UserServiceLogicException, UserNotFoundException {
         try {
             Usuario user = userRepository.findById(id).orElseThrow(
-                    () -> new UserNotFoundException("User not found with id " + id));
+                    () -> new UserNotFoundException(ExceptionMessageResponse.USER_NOT_FOUND.getMessage()+ id));
 
             userRepository.delete(user);
 
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(new ApiResponseDto<>(ApiResponseStatus.SUCCESS.name(),
-                            "User  deleted successfully!")
+                            ExceptionMessageResponse.USER_DELETE.getMessage()
+                            )
                     );
         } catch (UserNotFoundException e) {
             throw new UserNotFoundException(e.getMessage());
