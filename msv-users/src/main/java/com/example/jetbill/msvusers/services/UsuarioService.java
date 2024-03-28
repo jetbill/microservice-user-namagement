@@ -20,4 +20,5 @@ public interface UsuarioService {
 
     ResponseEntity<ApiResponseDto<?>> deleteUser(long id)
             throws UserServiceLogicException, UserNotFoundException;
+    ResponseEntity<ApiResponseDto<?>> userDetail(long id) throws UserNotFoundException, UserServiceLogicException;
 }

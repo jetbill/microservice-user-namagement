@@ -44,4 +44,10 @@ public class UsuarioController {
             throws UserNotFoundException, UserServiceLogicException {
         return userService.deleteUser(id);
     }
+
+    @GetMapping("/get/{id}")
+    public ResponseEntity<ApiResponseDto<?>> userDetail(@PathVariable long id)
+        throws UserNotFoundException, UserServiceLogicException{
+        return userService.userDetail(id);
+    }
 }

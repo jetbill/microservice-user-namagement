@@ -3,6 +3,7 @@ package com.example.jetbill.msvusers.services;
 import com.example.jetbill.msvusers.dto.ApiResponseDto;
 import com.example.jetbill.msvusers.dto.ApiResponseStatus;
 import com.example.jetbill.msvusers.dto.UserRequestDTO;
+import com.example.jetbill.msvusers.exceptions.ExceptionMessageResponse;
 import com.example.jetbill.msvusers.exceptions.UserAlreadyExistsException;
 import com.example.jetbill.msvusers.exceptions.UserNotFoundException;
 import com.example.jetbill.msvusers.exceptions.UserServiceLogicException;
@@ -11,7 +12,6 @@ import com.example.jetbill.msvusers.repository.UsuarioRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -83,7 +83,7 @@ public class UsuarioServiceImpl implements UsuarioService{
         throws UserNotFoundException, UserServiceLogicException {
         try {
             Usuario user = userRepository.findById(id).orElseThrow(
-                    () -> new UserNotFoundException("User not found with id " + id));
+                    () -> new UserNotFoundException(ExceptionMessageResponse.USER_NOT_FOUND.toString() + id));
 
             user.setEmail(newUserDetails.getEmail());
             user.setUserName(newUserDetails.getUserName());
@@ -125,6 +125,30 @@ public class UsuarioServiceImpl implements UsuarioService{
             log.error("Failed to delete user: " + e.getMessage());
             throw new UserServiceLogicException();
         }
+    }
+
+    @Override
+    public ResponseEntity<ApiResponseDto<?>> userDetail(long id)
+            throws UserNotFoundException, UserServiceLogicException {
+
+        try {
+            Usuario user = userRepository.findById(id).orElseThrow(
+                    () -> new UserNotFoundException(ExceptionMessageResponse.
+                            USER_NOT_FOUND.getMessage().concat(":")+ id));
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ApiResponseDto<>(ApiResponseStatus.SUCCESS.name(),
+                            user)
+                    );
+
+        }catch (UserNotFoundException e) {
+            throw new UserNotFoundException(e.getMessage());
+        } catch (Exception e) {
+            log.error("Failed to find user: " + e.getMessage());
+            throw new UserServiceLogicException();
+        }
+
+
     }
 }
 
